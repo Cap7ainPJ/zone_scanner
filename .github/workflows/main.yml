@@ -1,8 +1,8 @@
-name: Run Scanner Every Hour
+name: Run Scanner During Market Hours
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '20 3-9 * * 1-5'   # 08:50 → 14:50 IST, Mon–Fri
   workflow_dispatch:
 
 jobs:
@@ -20,12 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests pandas
+          pip install --upgrade pip
+          pip install requests pandas --no-cache-dir
 
       - name: Run script
-        run: |
+        run: |         
           python github_auto.py          
 
-      - name: Run script
         run: |
           python YOUR_FILE_NAME.py
