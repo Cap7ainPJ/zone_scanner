@@ -2,7 +2,32 @@ name: Run Scanner During Market Hours
 
 on:
   schedule:
-    - cron: '20 3-9 * * 1-5'   # 08:50 → 14:50 IST, Mon–Fri
+    - cron: '20 3-9 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install requests pandas --no-cache-dir
+
+          name: Run Scanner During Market Hours
+
+on:
+  schedule:
+    - cron: '20 3-9 * * 1-5'
   workflow_dispatch:
 
 jobs:
@@ -24,8 +49,9 @@ jobs:
           pip install requests pandas --no-cache-dir
 
       - name: Run script
-        run: |         
-          python github_auto.py          
-
         run: |
-          python YOUR_FILE_NAME.py
+          python -u github_auto.py
+
+      - name: Run script
+        run: |
+          python -u YOUR_FILE_NAME.py
