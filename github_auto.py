@@ -84,7 +84,7 @@ nse_headers = {
     "Accept": "application/json",
 }
 try:
-    nse_session.get("https://www.nseindia.com", headers=nse_headers, timeout=10)
+    nse_session.get("https://www.nseindia.com", headers=nse_headers, timeout=4)
 except:
     pass
 
@@ -100,7 +100,7 @@ LTP_URL = "https://api.upstox.com/v3/market-quote/ltp"
 # ======================================================
 def download_gdrive_text(file_id):
     url = f"https://drive.google.com/uc?export=download&id={file_id}"
-    r = requests.get(url, timeout=30)
+    r = requests.get(url, timeout=10)
     r.raise_for_status()
     txt = r.text.strip()
     if "<html" in txt.lower():
@@ -513,7 +513,7 @@ def send_html_to_telegram(run_id, generated_at_str, expiry_used):
                 "chat_id": TELEGRAM_CHAT_ID,
                 "caption": caption[:1024],
             }
-            r = requests.post(url, data=data, files=files, timeout=60)
+            r = requests.post(url, data=data, files=files, timeout=10)
             r.raise_for_status()
         print("Telegram HTML sent.")
     except Exception as e:
@@ -532,7 +532,7 @@ def bulk_get_ltp(keys):
         while idx < len(keys):
             chunk = keys[idx: idx + cs]
             try:
-                r = SESSION.get(LTP_URL, params={"instrument_key": ",".join(chunk)}, timeout=12)
+                r = SESSION.get(LTP_URL, params={"instrument_key": ",".join(chunk)}, timeout=(3, 5))
                 if r.status_code == 429:
                     break
 
@@ -557,7 +557,7 @@ def bulk_get_ltp(keys):
         chunk = keys[idx: idx + 5]
         try:
             time.sleep(1)
-            r = SESSION.get(LTP_URL, params={"instrument_key": ",".join(chunk)}, timeout=12)
+            r = SESSION.get(LTP_URL, params={"instrument_key": ",".join(chunk)}, timeout=(3, 5))
             r.raise_for_status()
             data = r.json().get("data", {})
             for _, info in data.items():
@@ -576,7 +576,7 @@ def bulk_get_ltp(keys):
 # ======================================================
 def download_instruments():
     print("\nDownloading instrument master...")
-    r = SESSION.get(INSTRUMENTS_URL, timeout=60, stream=True)
+    r = SESSION.get(INSTRUMENTS_URL, timeout=10, stream=True)
     r.raise_for_status()
 
     with gzip.GzipFile(fileobj=r.raw) as gz:
@@ -733,7 +733,7 @@ def fetch_option_ohlc_1h_upstox(instrument_key, from_date, to_date):
     }
 
     try:
-        r = SESSION.get(url, headers=headers, timeout=20)
+        r = SESSION.get(url, headers=headers, timeout=10)
         r.raise_for_status()
         js = r.json()
     except:
@@ -760,7 +760,7 @@ def fetch_intraday_1h(instrument_key):
     url = f"https://api.upstox.com/v3/historical-candle/{instrument_key}/1hour"
 
     try:
-        r = SESSION.get(url, timeout=20)
+        r = SESSION.get(url, timeout=10)
         r.raise_for_status()
         js = r.json()
     except:
